@@ -1,0 +1,40 @@
+{
+  "name": "url-checker",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "npm run build --workspace @url-checker/shared && npm run build --workspace @url-checker/api && npm run build --workspace @url-checker/web",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "eslint . && npm run lint --workspace @url-checker/shared && npm run lint --workspace @url-checker/api && npm run lint --workspace @url-checker/web",
+    "prepare": "husky",
+    "test": "npm run test --workspace @url-checker/shared && npm run test --workspace @url-checker/api && npm run test --workspace @url-checker/web",
+    "typecheck": "npm run typecheck --workspace @url-checker/shared && npm run typecheck --workspace @url-checker/api && npm run typecheck --workspace @url-checker/web"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "eslint": "^9.30.1",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.1"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,ts,tsx,json,md}": [
+      "prettier --write"
+    ],
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint --fix"
+    ]
+  }
+}

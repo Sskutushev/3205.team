@@ -1,0 +1,48 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      PORT: 3000
+      QUEUE_DRIVER: memory
+      STORAGE_DRIVER: memory
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/health').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    ports:
+      - '3000:3000'
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '8080:80'
+
+  redis:
+    image: redis:7-alpine
+    profiles: ['scale']
+    ports:
+      - '6379:6379'
+
+  postgres:
+    environment:
+      POSTGRES_DB: url_checker
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    image: postgres:17-alpine
+    profiles: ['sql']
+    ports:
+      - '5432:5432'

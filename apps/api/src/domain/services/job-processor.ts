@@ -9,6 +9,7 @@ import { deriveJobStatus } from './job-summary.js';
 
 const MAX_CONCURRENCY = 5;
 const MAX_DELAY_MS = 10_001;
+// EXTENSION: add a global outbound concurrency cap across all jobs.
 
 export type JobProcessorDeps = {
   jobStore: JobStore;

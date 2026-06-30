@@ -8,17 +8,27 @@ Async URL checking service built as a small fullstack monorepo:
 
 ## Features
 
+### Backend
+
 - Submit a batch of URLs and process them asynchronously in the background
 - Enforce per-job concurrency cap of `5` concurrent HEAD requests
 - Cancel running jobs with cooperative abort handling
-- Poll active jobs safely without stale response races in the UI
 - Run locally with zero external infrastructure in default `memory` mode
+
+### Frontend
+
+- Poll active jobs safely without stale response races (epoch guard)
+- Light and dark themes, persisted and matching the system preference
+- UI in five languages (English, Español, Русский, Deutsch, 中文) with flags
+- Errors surface as user-friendly toast notifications, fully translated
+- Animated background, fully responsive layout down to 375px (iPhone SE)
 
 ## Stack
 
 - Backend: NestJS, TypeScript, Vitest
-- Frontend: React, Vite, Zustand, TypeScript, Vitest
-- Tooling: npm workspaces, ESLint, Prettier, GitHub Actions
+- Frontend: React, Vite, Zustand, lucide-react, TypeScript, Vitest
+- Frontend extras: light/dark themes and a dependency-free i18n layer (5 locales)
+- Tooling: npm workspaces, ESLint, Prettier, GitHub Actions, Docker
 
 ## API
 

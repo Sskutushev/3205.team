@@ -34,6 +34,10 @@ docker compose up --build
 - API: `http://localhost:3000`
 - Web: `http://localhost:8080`
 
+The web container serves the built SPA via nginx and reverse-proxies `/api`
+to the API service on the compose network, so the frontend needs no
+`VITE_API_BASE_URL` and there is no cross-origin setup in Docker.
+
 Optional infra profiles:
 
 ```bash

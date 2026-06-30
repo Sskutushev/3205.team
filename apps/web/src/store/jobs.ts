@@ -5,9 +5,15 @@ import {
   type JobDetails,
   type JobSummary,
 } from '@url-checker/shared';
-import { ApiError, createApiClient, type ApiClient } from '../lib/api.js';
+import { createApiClient, type ApiClient } from '../lib/api.js';
+import { toErrorMessageKey } from '../lib/errors.js';
+import { useToastStore } from './toasts.js';
 
 const POLL_INTERVAL_MS = 1500;
+
+function notifyError(error: unknown): void {
+  useToastStore.getState().pushError(toErrorMessageKey(error));
+}
 
 type JobsState = {
   jobs: JobSummary[];
@@ -15,7 +21,6 @@ type JobsState = {
   activeJobDetails: JobDetails | null;
   loading: boolean;
   jobsLoading: boolean;
-  error: string | null;
   pollEpoch: number;
   pollRequest: AbortController | null;
   pollTimer: ReturnType<typeof globalThis.setTimeout> | null;
@@ -72,7 +77,6 @@ export function createJobsStore(api: ApiClient) {
     activeJobDetails: null,
     loading: false,
     jobsLoading: false,
-    error: null,
     pollEpoch: 0,
     pollRequest: null,
     pollTimer: null,
@@ -81,17 +85,20 @@ export function createJobsStore(api: ApiClient) {
     async createJob(rawInput) {
       const urls = normalizeUrls(rawInput);
 
-      set({ error: null, loading: true });
+      if (urls.length === 0) {
+        useToastStore.getState().pushError('toast.error.emptyUrls');
+        return;
+      }
+
+      set({ loading: true });
 
       try {
         const response = await api.createJob({ urls });
+        useToastStore.getState().pushSuccess('toast.success.created');
         await get().selectJob(response.jobId);
         await get().refreshJobs();
       } catch (error) {
-        set({
-          error:
-            error instanceof Error ? error.message : 'Failed to create job.',
-        });
+        notifyError(error);
       } finally {
         set({ loading: false });
       }
@@ -116,12 +123,8 @@ export function createJobsStore(api: ApiClient) {
           return;
         }
 
-        set({
-          error:
-            error instanceof Error ? error.message : 'Failed to load jobs.',
-          jobsLoading: false,
-          jobsRequest: null,
-        });
+        notifyError(error);
+        set({ jobsLoading: false, jobsRequest: null });
       }
     },
 
@@ -131,7 +134,6 @@ export function createJobsStore(api: ApiClient) {
 
       set({
         activeJobId: jobId,
-        error: null,
         loading: true,
         pollEpoch: nextEpoch,
       });
@@ -177,15 +179,8 @@ export function createJobsStore(api: ApiClient) {
             return;
           }
 
-          set({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'Failed to load job details.',
-            loading: false,
-            pollRequest: null,
-            pollTimer: null,
-          });
+          notifyError(error);
+          set({ loading: false, pollRequest: null, pollTimer: null });
         }
       };
 
@@ -207,18 +202,14 @@ export function createJobsStore(api: ApiClient) {
           ...activeJobDetails,
           status: JobStatus.cancelled,
         }),
-        error: null,
       }));
 
       try {
         await api.cancelJob(activeJobId);
+        useToastStore.getState().pushSuccess('toast.success.cancelled');
         await get().refreshJobs();
       } catch (error) {
-        const message =
-          error instanceof ApiError
-            ? error.message
-            : 'Failed to cancel the active job.';
-        set({ error: message });
+        notifyError(error);
         await get().selectJob(activeJobId);
       }
     },

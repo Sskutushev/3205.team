@@ -6,3 +6,5 @@ coverage/
 *.log
 *.tsbuildinfo
 .claude/
+photo_*.jpg
+*.png

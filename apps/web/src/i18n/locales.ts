@@ -1,7 +1,7 @@
 import type { Dictionary, Language } from './types.js';
 
 const en: Dictionary = {
-  'app.title': 'Check a batch of links, all at once',
+  'app.title': 'Check your links in bulk',
   'app.subtitle':
     'Paste your URLs, run the checks, and watch each one resolve in real time.',
   'topbar.brand': 'URL Checker',
@@ -62,7 +62,7 @@ const en: Dictionary = {
 };
 
 const es: Dictionary = {
-  'app.title': 'Comprueba un lote de enlaces de una vez',
+  'app.title': 'Comprueba enlaces en lote',
   'app.subtitle':
     'Pega tus URLs, lanza la comprobación y mira cómo se resuelve cada una en tiempo real.',
   'topbar.brand': 'URL Checker',
@@ -124,7 +124,7 @@ const es: Dictionary = {
 };
 
 const ru: Dictionary = {
-  'app.title': 'Проверьте список ссылок за один раз',
+  'app.title': 'Проверка ссылок списком',
   'app.subtitle':
     'Вставьте ссылки, запустите проверку и следите, как каждая обрабатывается в реальном времени.',
   'topbar.brand': 'URL Checker',
@@ -186,7 +186,7 @@ const ru: Dictionary = {
 };
 
 const de: Dictionary = {
-  'app.title': 'Prüfe eine ganze Liste von Links auf einmal',
+  'app.title': 'Links im Stapel prüfen',
   'app.subtitle':
     'Füge deine URLs ein, starte die Prüfung und sieh zu, wie jede in Echtzeit verarbeitet wird.',
   'topbar.brand': 'URL Checker',
@@ -248,7 +248,7 @@ const de: Dictionary = {
 };
 
 const zh: Dictionary = {
-  'app.title': '一次批量检查多个链接',
+  'app.title': '批量检查链接',
   'app.subtitle': '粘贴你的网址，运行检查，实时查看每个链接的处理结果。',
   'topbar.brand': 'URL Checker',
   'topbar.theme.toLight': '切换到浅色主题',

@@ -345,10 +345,12 @@ textarea {
 
 .intro h1 {
   margin: 0 0 8px;
-  font-size: clamp(1.6rem, 1rem + 2.2vw, 2.7rem);
-  line-height: 1.08;
+  /* Headline stays on one line across every language; the vw term scales the
+     font down on narrow screens so the longest title still fits without wrap. */
+  font-size: clamp(1.3rem, 6vw, 2.7rem);
+  line-height: 1.1;
   letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .intro p {

@@ -2,6 +2,7 @@ import { JobStatus } from '@url-checker/shared';
 import { InvalidJobTransitionError } from '../errors/invalid-job-transition.error.js';
 import {
   createPendingUrlResult,
+  updateUrlResult,
   type UrlResultEntity,
 } from './url-result.entity.js';
 
@@ -77,6 +78,10 @@ export class JobEntity {
     return this.resultsValue.map((result) => ({ ...result }));
   }
 
+  public get totalUrls(): number {
+    return this.resultsValue.length;
+  }
+
   public startProcessing(): void {
     this.transitionTo(JobStatus.inProgress);
   }
@@ -91,6 +96,19 @@ export class JobEntity {
 
   public cancel(): void {
     this.transitionTo(JobStatus.cancelled);
+  }
+
+  public updateUrlResult(
+    index: number,
+    updater: (current: UrlResultEntity) => UrlResultEntity,
+  ): void {
+    const currentResult = this.resultsValue[index];
+
+    if (currentResult === undefined) {
+      throw new Error(`URL result at index ${index} does not exist.`);
+    }
+
+    this.resultsValue[index] = updateUrlResult(currentResult, updater);
   }
 
   public toState(): JobEntityState {

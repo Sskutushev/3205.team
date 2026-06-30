@@ -16,3 +16,18 @@ export function createPendingUrlResult(url: string): UrlResultEntity {
     status: UrlStatus.pending,
   };
 }
+
+export function updateUrlResult(
+  current: UrlResultEntity,
+  updater: (result: UrlResultEntity) => UrlResultEntity,
+): UrlResultEntity {
+  const next = updater({ ...current });
+
+  return {
+    ...next,
+    startedAt:
+      next.startedAt === undefined ? undefined : new Date(next.startedAt),
+    finishedAt:
+      next.finishedAt === undefined ? undefined : new Date(next.finishedAt),
+  };
+}

@@ -6,7 +6,10 @@ services:
     environment:
       PORT: 3000
       QUEUE_DRIVER: memory
-      STORAGE_DRIVER: memory
+      # Defaults to in-memory. Switch to shared Redis state with:
+      #   STORAGE_DRIVER=redis docker compose --profile scale up --build
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-memory}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     healthcheck:
       test:
         [

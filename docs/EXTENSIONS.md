@@ -1,5 +1,10 @@
 # Future Extensions
 
+## Implemented
+
+- Redis-backed `JobStore` (`STORAGE_DRIVER=redis`): shared cross-instance state,
+  TTL-bounded keys, and a sorted-set index for newest-first listing.
+
 ## Already Marked in Code
 
 - `apps/api/src/processing/providers/fetch-http-checker.ts`: `// EXTENSION:` HEAD -> GET fallback for `405`.
@@ -7,7 +12,6 @@
 
 ## Next Practical Expansions
 
-- Redis-backed `JobStore` for cross-process state sharing.
 - TypeORM-backed `JobStore` with SQL rollups and persistence.
 - BullMQ-backed queue for horizontal scaling and stateless API nodes.
 - SSE or WebSocket progress streaming to reduce polling.

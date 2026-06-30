@@ -2,16 +2,19 @@ import { useEffect } from 'react';
 import { CreateJobForm } from './components/CreateJobForm.js';
 import { JobDetails } from './components/JobDetails.js';
 import { JobList } from './components/JobList.js';
+import { Toaster } from './components/Toaster.js';
+import { TopBar } from './components/TopBar.js';
+import { useTranslation } from './i18n/I18nProvider.js';
 import { useJobsStore } from './store/jobs.js';
 import './App.css';
 
 export function App() {
+  const { t } = useTranslation();
   const {
     activeJobDetails,
     activeJobId,
     cancelActiveJob,
     createJob,
-    error,
     jobs,
     jobsLoading,
     loading,
@@ -29,37 +32,42 @@ export function App() {
   }, [refreshJobs, stopPolling]);
 
   return (
-    <main className="app-shell">
-      <header className="hero">
-        <p className="eyebrow">Async URL Verification</p>
-        <h1>Track long-running HEAD checks without stale UI updates.</h1>
-        <p>
-          Submit a batch, watch per-URL progress, and switch between jobs
-          safely. The active view ignores delayed responses from stale polling
-          cycles.
-        </p>
-      </header>
+    <div className="app-shell">
+      <div className="aurora" aria-hidden="true">
+        <span className="aurora-blob aurora-blob-1" />
+        <span className="aurora-blob aurora-blob-2" />
+        <span className="aurora-blob aurora-blob-3" />
+      </div>
 
-      {error === null ? null : <div className="flash-error">{error}</div>}
+      <TopBar />
 
-      <section className="dashboard">
-        <div className="sidebar">
-          <CreateJobForm disabled={loading} onSubmit={createJob} />
-          <JobList
-            activeJobId={activeJobId}
-            jobs={jobs}
-            loading={jobsLoading}
-            onSelect={(jobId) => void selectJob(jobId)}
-          />
+      <main className="workspace">
+        <section className="intro">
+          <h1>{t('app.title')}</h1>
+          <p>{t('app.subtitle')}</p>
+        </section>
+
+        <div className="dashboard">
+          <div className="sidebar">
+            <CreateJobForm disabled={loading} onSubmit={createJob} />
+            <JobList
+              activeJobId={activeJobId}
+              jobs={jobs}
+              loading={jobsLoading}
+              onSelect={(jobId) => void selectJob(jobId)}
+            />
+          </div>
+          <div className="content">
+            <JobDetails
+              details={activeJobDetails}
+              loading={loading}
+              onCancel={cancelActiveJob}
+            />
+          </div>
         </div>
-        <div className="content">
-          <JobDetails
-            details={activeJobDetails}
-            loading={loading}
-            onCancel={cancelActiveJob}
-          />
-        </div>
-      </section>
-    </main>
+      </main>
+
+      <Toaster />
+    </div>
   );
 }

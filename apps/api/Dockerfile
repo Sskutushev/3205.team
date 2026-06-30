@@ -29,6 +29,7 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/apps/api ./apps/api
 COPY --from=build /app/packages/shared ./packages/shared
+COPY --from=build /app/packages/shared ./node_modules/@url-checker/shared
 
 WORKDIR /app/apps/api
 

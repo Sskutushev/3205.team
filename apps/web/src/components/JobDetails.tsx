@@ -1,19 +1,23 @@
 import {
-  JobStatus,
+  AlertTriangle,
+  CheckCircle2,
+  ListChecks,
+  Loader2,
+  MousePointerClick,
+} from 'lucide-react';
+import {
   UrlStatus,
   type JobDetails as JobDetailsModel,
 } from '@url-checker/shared';
+import { useTranslation } from '../i18n/I18nProvider.js';
 import { CancelButton } from './CancelButton.js';
+import { StatusBadge } from './StatusBadge.js';
 
 type JobDetailsProps = {
   details: JobDetailsModel | null;
   loading: boolean;
   onCancel: () => Promise<void>;
 };
-
-function formatStatus(status: JobStatus | UrlStatus): string {
-  return status.replace('_', ' ');
-}
 
 function countProcessed(details: JobDetailsModel): number {
   return details.results.filter(
@@ -24,30 +28,35 @@ function countProcessed(details: JobDetailsModel): number {
 }
 
 export function JobDetails({ details, loading, onCancel }: JobDetailsProps) {
+  const { t } = useTranslation();
+
   if (details === null) {
     return (
-      <section className="panel details-panel">
-        <div className="panel-header">
-          <p className="eyebrow">Details</p>
-          <h2>Select a job to inspect each URL result</h2>
+      <section className="panel details-panel details-empty">
+        <div className="empty-block">
+          <MousePointerClick size={30} strokeWidth={1.6} />
+          <h2>{t('details.empty.title')}</h2>
+          <p className="muted">{t('details.empty.subtitle')}</p>
         </div>
       </section>
     );
   }
 
   const processedCount = countProcessed(details);
+  const progressPercent =
+    details.total === 0
+      ? 0
+      : Math.round((processedCount / details.total) * 100);
 
   return (
     <section className="panel details-panel">
-      <div className="panel-header row-between">
-        <div>
-          <p className="eyebrow">Active Job</p>
-          <h2>{details.id}</h2>
+      <div className="panel-header details-header">
+        <div className="details-title">
+          <p className="eyebrow">{t('details.eyebrow.active')}</p>
+          <h2 className="job-id">{details.id}</h2>
         </div>
         <div className="actions-row">
-          <span className={`status-badge status-${details.status}`}>
-            {formatStatus(details.status)}
-          </span>
+          <StatusBadge status={details.status} />
           <CancelButton
             disabled={loading}
             onCancel={onCancel}
@@ -57,43 +66,68 @@ export function JobDetails({ details, loading, onCancel }: JobDetailsProps) {
       </div>
 
       <div className="summary-grid">
-        <div>
-          <span className="metric-label">Progress</span>
+        <div className="metric">
+          <span className="metric-label">
+            <ListChecks size={14} strokeWidth={2.2} />
+            {t('details.progress')}
+          </span>
           <strong>
             {processedCount} / {details.total}
           </strong>
+          <div className="progress-track">
+            <div
+              className="progress-fill"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
-        <div>
-          <span className="metric-label">Succeeded</span>
+        <div className="metric">
+          <span className="metric-label metric-ok">
+            <CheckCircle2 size={14} strokeWidth={2.4} />
+            {t('details.succeeded')}
+          </span>
           <strong>{details.successCount}</strong>
         </div>
-        <div>
-          <span className="metric-label">Errors</span>
+        <div className="metric">
+          <span className="metric-label metric-error">
+            <AlertTriangle size={14} strokeWidth={2.4} />
+            {t('details.errors')}
+          </span>
           <strong>{details.errorCount}</strong>
         </div>
       </div>
 
-      <div className="result-table">
+      <div className="result-table scroll-area">
         <div className="result-table-head">
-          <span>URL</span>
-          <span>Status</span>
-          <span>HTTP</span>
-          <span>Duration</span>
-          <span>Error</span>
+          <span>{t('table.url')}</span>
+          <span>{t('table.status')}</span>
+          <span>{t('table.http')}</span>
+          <span>{t('table.duration')}</span>
+          <span>{t('table.error')}</span>
         </div>
         {details.results.map((result) => (
           <div className="result-row" key={`${details.id}-${result.url}`}>
-            <span className="url-cell">{result.url}</span>
-            <span className={`status-badge status-${result.status}`}>
-              {formatStatus(result.status)}
+            <span className="url-cell" title={result.url}>
+              {result.url}
             </span>
-            <span>{result.httpStatus ?? '-'}</span>
-            <span>
-              {result.durationMs === undefined
-                ? '-'
-                : `${result.durationMs} ms`}
+            <span className="cell-status">
+              <StatusBadge status={result.status} />
             </span>
-            <span className="muted">{result.error ?? '-'}</span>
+            <span className="cell-http" data-label={t('table.http')}>
+              {result.httpStatus ?? '—'}
+            </span>
+            <span className="cell-duration" data-label={t('table.duration')}>
+              {result.status === UrlStatus.inProgress ? (
+                <Loader2 className="spin" size={14} strokeWidth={2.4} />
+              ) : result.durationMs === undefined ? (
+                '—'
+              ) : (
+                t('units.ms', { value: result.durationMs })
+              )}
+            </span>
+            <span className="muted cell-error" data-label={t('table.error')}>
+              {result.error ?? '—'}
+            </span>
           </div>
         ))}
       </div>

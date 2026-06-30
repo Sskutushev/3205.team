@@ -1,4 +1,6 @@
+import { Ban } from 'lucide-react';
 import { JobStatus } from '@url-checker/shared';
+import { useTranslation } from '../i18n/I18nProvider.js';
 
 type CancelButtonProps = {
   disabled: boolean;
@@ -11,6 +13,7 @@ export function CancelButton({
   status,
   onCancel,
 }: CancelButtonProps) {
+  const { t } = useTranslation();
   const canCancel =
     status === JobStatus.pending || status === JobStatus.inProgress;
 
@@ -25,7 +28,8 @@ export function CancelButton({
       onClick={() => void onCancel()}
       type="button"
     >
-      Cancel job
+      <Ban size={15} strokeWidth={2.4} />
+      {disabled ? t('details.cancelling') : t('details.cancel')}
     </button>
   );
 }

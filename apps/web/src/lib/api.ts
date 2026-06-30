@@ -18,13 +18,25 @@ export class ApiError extends Error {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 async function requestJson<T>(input: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${input}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    ...init,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${input}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init?.headers ?? {}),
+      },
+      ...init,
+    });
+  } catch (error) {
+    // Let aborts bubble so callers can ignore stale/cancelled requests;
+    // everything else is a connectivity failure (statusCode 0).
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+
+    throw new ApiError(0, 'Network request failed.');
+  }
 
   if (!response.ok) {
     const payload = (await response.json().catch(() => null)) as {

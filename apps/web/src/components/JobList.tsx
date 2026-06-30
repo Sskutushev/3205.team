@@ -1,4 +1,7 @@
-import { JobStatus, type JobSummary } from '@url-checker/shared';
+import { CheckCircle2, History, Inbox, Link2, XCircle } from 'lucide-react';
+import { type JobSummary } from '@url-checker/shared';
+import { useTranslation } from '../i18n/I18nProvider.js';
+import { StatusBadge } from './StatusBadge.js';
 
 type JobListProps = {
   activeJobId: string | null;
@@ -7,32 +10,37 @@ type JobListProps = {
   onSelect: (jobId: string) => void;
 };
 
-function formatStatus(status: JobStatus): string {
-  return status.replace('_', ' ');
-}
-
 export function JobList({
   activeJobId,
   jobs,
   loading,
   onSelect,
 }: JobListProps) {
+  const { t, language } = useTranslation();
+
   return (
-    <section className="panel">
+    <section className="panel list-panel">
       <div className="panel-header row-between">
         <div>
-          <p className="eyebrow">Jobs</p>
-          <h2>Recent runs</h2>
+          <p className="eyebrow">
+            <History size={13} strokeWidth={2.6} />
+            {t('list.eyebrow')}
+          </p>
+          <h2>{t('list.title')}</h2>
         </div>
         <span className="muted">
-          {loading ? 'Refreshing...' : `${jobs.length} total`}
+          {loading
+            ? t('list.refreshing')
+            : t('list.total', { value: jobs.length })}
         </span>
       </div>
-      <div className="job-list">
+
+      <div className="job-list scroll-area">
         {jobs.length === 0 ? (
-          <p className="empty-state">
-            Create your first job to see live progress here.
-          </p>
+          <div className="empty-block">
+            <Inbox size={26} strokeWidth={1.6} />
+            <p>{t('list.empty')}</p>
+          </div>
         ) : (
           jobs.map((job) => (
             <button
@@ -42,18 +50,25 @@ export function JobList({
               type="button"
             >
               <div className="row-between">
-                <strong>{job.id.slice(0, 8)}</strong>
-                <span className={`status-badge status-${job.status}`}>
-                  {formatStatus(job.status)}
-                </span>
+                <span className="job-id">{job.id.slice(0, 8)}</span>
+                <StatusBadge status={job.status} />
               </div>
-              <p className="muted">
-                {new Date(job.createdAt).toLocaleString()}
+              <p className="muted job-date">
+                {new Date(job.createdAt).toLocaleString(language)}
               </p>
               <div className="stats-row">
-                <span>{job.total} URLs</span>
-                <span>{job.successCount} ok</span>
-                <span>{job.errorCount} error</span>
+                <span className="stat">
+                  <Link2 size={13} strokeWidth={2.2} />
+                  {t('list.urls', { value: job.total })}
+                </span>
+                <span className="stat stat-ok">
+                  <CheckCircle2 size={13} strokeWidth={2.4} />
+                  {t('list.ok', { value: job.successCount })}
+                </span>
+                <span className="stat stat-error">
+                  <XCircle size={13} strokeWidth={2.4} />
+                  {t('list.errors', { value: job.errorCount })}
+                </span>
               </div>
             </button>
           ))

@@ -1,1 +1,7 @@
-export type { JobDetails, JobSummary, UrlResult } from '@url-checker/shared';
+export type {
+  CreateJobRequest,
+  CreateJobResponse,
+  JobDetails,
+  JobSummary,
+  UrlResult,
+} from '@url-checker/shared';

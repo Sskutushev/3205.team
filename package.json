@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "npm run build --workspace @url-checker/shared && npm run build --workspace @url-checker/api && npm run build --workspace @url-checker/web",
+    "eslint": "npm run lint",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "eslint . && npm run lint --workspace @url-checker/shared && npm run lint --workspace @url-checker/api && npm run lint --workspace @url-checker/web",

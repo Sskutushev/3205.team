@@ -113,6 +113,12 @@ export class JobProcessor {
       );
       const delayMs = this.deps.randomProvider.nextInt(MAX_DELAY_MS);
 
+      // The artificial 0-10s delay runs inside the worker, so its slot stays
+      // occupied until the result is saved. This deliberately bounds total
+      // in-flight work per job at <=5 (spec: "no more than 5 simultaneous
+      // HEAD requests") and keeps the worker the single owner of each URL's
+      // lifecycle. Releasing the slot during the delay would raise throughput
+      // but is intentionally avoided here for that simpler, safer guarantee.
       await this.deps.delayProvider.wait(delayMs, this.signal);
 
       const finishedAt = this.deps.clock.now();

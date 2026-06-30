@@ -92,6 +92,13 @@ export class InMemoryJobQueue implements JobQueue, OnModuleDestroy {
       return;
     }
 
+    // A DELETE can win the race against this microtask and mark the job
+    // cancelled in the store before processing starts. Bail out instead of
+    // attempting the forbidden pending->in_progress transition on it.
+    if (job.status !== JobStatus.pending) {
+      return;
+    }
+
     const processor = new JobProcessor({
       jobStore: this.jobStore,
       httpChecker: this.httpChecker,

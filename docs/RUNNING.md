@@ -49,9 +49,16 @@ docker compose --profile sql up --build
 
 Use `.env.example` as a starting point.
 
-| Variable            |  Default | Purpose                  |
-| ------------------- | -------: | ------------------------ |
-| `PORT`              |   `3000` | Nest API listen port     |
-| `STORAGE_DRIVER`    | `memory` | Active job-store adapter |
-| `QUEUE_DRIVER`      | `memory` | Active queue adapter     |
-| `VITE_API_BASE_URL` |    empty | Frontend API base URL    |
+| Variable            |              Default | Purpose                             |
+| ------------------- | -------------------: | ----------------------------------- |
+| `PORT`              |               `3000` | Nest API listen port                |
+| `STORAGE_DRIVER`    |             `memory` | Job-store adapter: `memory`/`redis` |
+| `REDIS_URL`         | `redis://redis:6379` | Redis connection when driver=redis  |
+| `QUEUE_DRIVER`      |             `memory` | Active queue adapter                |
+| `VITE_API_BASE_URL` |                empty | Frontend API base URL               |
+
+Run with shared Redis state:
+
+```bash
+STORAGE_DRIVER=redis docker compose --profile scale up --build
+```

@@ -9,4 +9,7 @@ async function bootstrap(): Promise<void> {
   await app.listen(port, '0.0.0.0');
 }
 
-void bootstrap();
+bootstrap().catch((error: unknown) => {
+  console.error('Failed to start the API:', error);
+  process.exit(1);
+});

@@ -1,10 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   type CreateJobResponse,
   type JobDetails,
@@ -29,11 +24,11 @@ export class JobsService {
   ) {}
 
   public async createJob(dto: CreateJobDto): Promise<CreateJobResponse> {
-    const urls = this.validateUrls(dto.urls);
+    // `dto.urls` is already trimmed, de-duplicated and validated by CreateJobDto.
     const job = JobEntity.create({
       id: randomUUID(),
       createdAt: this.clock.now(),
-      urls,
+      urls: dto.urls,
     });
 
     await this.jobStore.create(job);
@@ -90,48 +85,5 @@ export class JobsService {
       successCount,
       errorCount,
     };
-  }
-
-  private validateUrls(urls: unknown): string[] {
-    if (!Array.isArray(urls)) {
-      throw new BadRequestException(['urls must be an array']);
-    }
-
-    const normalized = urls
-      .map((value) => (typeof value === 'string' ? value.trim() : value))
-      .filter((value) => value !== '');
-
-    if (normalized.length === 0) {
-      throw new BadRequestException(['urls should not be empty']);
-    }
-
-    if (normalized.length > 100) {
-      throw new BadRequestException([
-        'urls must contain no more than 100 entries',
-      ]);
-    }
-
-    const invalidUrl = normalized.find((value) => !this.isValidUrl(value));
-
-    if (invalidUrl !== undefined) {
-      throw new BadRequestException([
-        'each value in urls must be a URL address',
-      ]);
-    }
-
-    return Array.from(new Set(normalized));
-  }
-
-  private isValidUrl(value: unknown): value is string {
-    if (typeof value !== 'string') {
-      return false;
-    }
-
-    try {
-      const url = new URL(value);
-      return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch {
-      return false;
-    }
   }
 }
